@@ -7,6 +7,15 @@
     this.player = null;
     this.bullets = null;
     this.bulletTime = 0;
+    this.scoreText = null;
+    this.levelText = null;
+    
+    this.level = null;
+    this.score;
+    this.lastScore;
+    this.numEnemigos;
+    this.auxiliar;
+    
   }
 
   Game.prototype = {
@@ -14,6 +23,13 @@
     create: function () {
       var x = 100
         , y = 100;
+      this.score = 0;
+      this.lastScore = 0;
+      this.level = 0;
+      this.auxiliar =10;
+      this.numEnemigos = 0;
+      
+      window.spaceinvaders.Global.score = 0;
       
       this.background = this.game.add.tileSprite(0, 0, 800, 900, 'background');
 
@@ -22,12 +38,13 @@
       this.player.frame = 0;
       this.player.x = 400;
       this.player.y = 650;
+      this.player.velocity = 7;
       this.input.onDown.add(this.onDown, this);
       
       
       
       this.bullets = this.add.group();
-      this.bullets.createMultiple(10, 'bullet');
+      this.bullets.createMultiple(20, 'bullet');
       this.bullets.setAll('anchor.x', 0.5);
       this.bullets.setAll('anchor.y', 1);
       this.bullets.setAll('outOfBoundsKill', true);
@@ -40,15 +57,19 @@
       this.enemyBullets.setAll('outOfBoundsKill', true);
       
       this.aliens = this.add.group();
-      this.aliens.createMultiple(10, 'marcianito');
+      /*this.aliens.createMultiple(5, 'marcianito');
       
-      this.aliens.setAll('outOfBoundsKill', true);
+
+      this.aliens.setAll('outOfBoundsKill', true);*/
+      
+      this.scoreText = this.add.text(32, 32, 'SCORE: 0', { font: "20px Arial", fill: "#ffffff", align: "left" });
+      this.levelText = this.add.text(200, 32, 'LEVEL: 0', { font: "20px Arial", fill: "#ffffff", align: "left" });
     },
 
     update: function () {
     	this.background.tilePosition.y += 5;
-    	
-      var x, y, cx, cy, dx, dy, angle, scale;
+    	//this.level = this.score % 15;
+        var x, y, cx, cy, dx, dy, angle, scale;
 
       x = this.input.position.x;
       y = this.input.position.y;
@@ -59,6 +80,20 @@
 
       dx = x - cx;
       dy = y - cy;
+      
+      if(this.score > this.auxiliar || this.score === 0)
+	  {
+    	  this.numEnemigos += 1;
+    	  this.aliens.createMultiple(1 + this.numEnemigos, 'marcianito');
+    	  this.aliens.setAll('outOfBoundsKill', true);
+    	  this.score +=5;
+    	  
+    	  this.level += 1;
+    	  this.auxiliar += (5 * this.level);
+    	  console.log("hola");
+    	  this.levelText.content = 'LEVEL:  ' + this.level;
+	  }
+      
       
       this.player.frame = 2;
       
@@ -100,6 +135,7 @@
     	  
       }
       
+      
       this.enemigos = this.aliens.getFirstExists(false);
       if (this.enemigos)
           {
@@ -114,10 +150,12 @@
       				this.enemigos.body.velocity.x = -100;
       				
       			}
-              this.enemigos.animations.add('fly', [ 0, 1], 40, true); 
+              
+              this.enemigos.animations.add('fly', [ 0, 1, 2, 3], 1000, true); 
               this.enemigos.play('fly');
 
         }
+      
       /*this.enemigos = this.aliens.getFirstExists(false);
       if (this.enemigos)
           {
@@ -127,7 +165,10 @@
               this.enemigos.body.velocity.x = -100;
 
         }*/
-      this.physics.overlap(this.bullets, this.aliens, function (bullet,enemigos){enemigos.kill(); bullet.kill()}, null, this);
+      //this.explosion.animations.add('boom',[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],10,true);
+      this.physics.overlap(this.bullets, this.aliens, function (bullet,enemigos){enemigos.kill(); bullet.kill(); this.score +=1; this.scoreText.content = 'SCORE: ' + this.score;}, null, this);
+      this.physics.overlap(this.player, this.aliens, function (player,enemigos){enemigos.kill(); player.kill(); this.game.state.start('end');}, null, this);
+      //this.physics.overlap(this.bullets, this.aliens, function (bullet, enemigos) {  bullet.kill(); enemigos.kill(); this.score += 10; this.scoreText.content = 'SCORE: ' + this.score;}, null, this);
       //this..physics.overlap(enemyBullets, player, enemyHitsPlayer, null, this);
     },
     
@@ -139,7 +180,7 @@
               
               this.bullet.reset(this.player.x, this.player.y + 8);
               this.bullet.body.velocity.y = -400;
-              this.bulletTime = this.game.time.now + 500;
+              this.bulletTime = this.game.time.now + 200;
           }
           
       }
@@ -163,3 +204,5 @@
   window['spaceinvaders'].Game = Game;
 
 }());
+
+//window.spaceinvaders.Global.score

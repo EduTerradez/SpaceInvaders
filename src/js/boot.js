@@ -31,6 +31,7 @@
 
   window['spaceinvaders'] = window['spaceinvaders'] || {};
   window['spaceinvaders'].Boot = Boot;
+  window['spaceinvaders'].Global = {score: 0}
 
 }());
 
