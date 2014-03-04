@@ -19,6 +19,8 @@
       this.background = this.game.add.tileSprite(0, 0, 800, 900, 'background');
       this.startButton = this.add.button(255, 495, 'startbutton', function() { this.game.state.start('game') }, this, 1, 0, 2);
       this.scoreButton = this.add.button(255, 595, 'scorebutton', function() { this.game.state.start('highscore') }, this, 1, 0, 2);
+      this.developersText = this.add.text(550, 880, 'Created by: EDU & IÑIGO', { font: "20px Arial", fill: "#ffffff", align: "left" });
+      
       this.title = this.game.add.sprite(15, 150, 'Titulo');
       this.direc = 1;
       this.player = this.add.sprite(x, y, 'battleship');

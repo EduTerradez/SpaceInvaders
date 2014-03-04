@@ -68,6 +68,12 @@
         alien.animations.add('boom'); 
         }, this);
       
+      this.music = this.game.add.audio('music', 1, true);
+      this.music.play('', 0, 1, true);
+
+
+      this.lasersound = this.game.add.audio('shoot');
+      
       this.scoreText = this.add.text(32, 32, 'SCORE: 0', { font: "20px Arial", fill: "#ffffff", align: "left" });
       this.levelText = this.add.text(200, 32, 'LEVEL: 0', { font: "20px Arial", fill: "#ffffff", align: "left" });
     },
@@ -137,7 +143,8 @@
       }
       
       if(this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
-    	  this.fireBullet();
+    	  this.fireBullet();+
+    	  this.lasersound.play();
     	  
       }
       
@@ -163,10 +170,16 @@
         }
       
       
-      this.physics.overlap(this.bullets, this.aliens, function (bullet,enemigos){enemigos.kill(); bullet.kill(); this.score +=1; this.scoreText.content = 'SCORE: ' + this.score;this.explosion = this.explosions.getFirstDead();
-      this.explosion.reset(enemigos.body.x, enemigos.body.y);
-      this.explosion.play('boom', 50, false, true);}, null, this);
-      this.physics.overlap(this.player, this.aliens, function (player,enemigos){enemigos.kill(); player.kill();window.spaceinvaders.Global.score = this.score; this.game.state.start('end');}, null, this);
+      this.physics.overlap(this.bullets, this.aliens, function (bullet,enemigos){enemigos.kill();
+      						bullet.kill(); this.score +=1; 
+      						this.scoreText.content = 'SCORE: ' + this.score;
+      						this.explosion = this.explosions.getFirstDead();
+      						this.explosion.reset(enemigos.body.x, enemigos.body.y);
+      						this.explosion.play('boom', 50, false, true);}, null, this);
+      this.physics.overlap(this.player, this.aliens, function (player,enemigos){enemigos.kill();
+      						player.kill();
+      						window.spaceinvaders.Global.score = this.score; 
+      						this.game.state.start('end');}, null, this);
       
     },
     
@@ -185,7 +198,7 @@
       },
        resetBullet: function(bullet) {
 
-    	    //  Called if the bullet goes out of the screen
+    	   
     	    bullet.kill();
 
     	},

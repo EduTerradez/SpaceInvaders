@@ -22,9 +22,12 @@
       this.load.image('bullet', 'assets/bullet1.png');
       this.load.image('background', 'assets/FondoFinal.png');
       this.load.image('Titulo' , 'assets/TituloFinal.png');
+      this.load.image('recuadro' , 'assets/recuadro.png');
       this.load.spritesheet('marcianito', 'assets/MarcianitosFinal.png',56,35);
       this.load.spritesheet('battleship', 'assets/Navesfuego.png',33,47);
       this.load.bitmapFont('minecraftia', 'assets/minecraftia.png', 'assets/minecraftia.xml');
+      this.load.audio('music', 'assets/Pirates.mp3');
+      this.load.audio('shoot', 'assets/Disparo.mp3');
     },
 
     create: function () {
