@@ -3,12 +3,14 @@
 
   function Game() {
 	this.aliens = null;
+	this.alien = null;
 	this.enemyBullet;
     this.player = null;
     this.bullets = null;
     this.bulletTime = 0;
     this.scoreText = null;
     this.levelText = null;
+    this.explosion = null;
     
     this.level = null;
     this.score;
@@ -37,9 +39,9 @@
       this.player.anchor.setTo(0.5, 0.5);
       this.player.frame = 0;
       this.player.x = 400;
-      this.player.y = 650;
-      this.player.velocity = 7;
-      this.input.onDown.add(this.onDown, this);
+      this.player.y = 750;
+      this.player.velocity = 8;
+      
       
       
       
@@ -57,17 +59,21 @@
       this.enemyBullets.setAll('outOfBoundsKill', true);
       
       this.aliens = this.add.group();
-      /*this.aliens.createMultiple(5, 'marcianito');
       
-
-      this.aliens.setAll('outOfBoundsKill', true);*/
+      this.explosions = this.game.add.group();
+      this.explosions.createMultiple(1000, 'boom');
+      this.explosions.forEach(function (alien) {
+        alien.anchor.x = 0.5;
+        alien.anchor.y = 0.5;
+        alien.animations.add('boom'); 
+        }, this);
       
       this.scoreText = this.add.text(32, 32, 'SCORE: 0', { font: "20px Arial", fill: "#ffffff", align: "left" });
       this.levelText = this.add.text(200, 32, 'LEVEL: 0', { font: "20px Arial", fill: "#ffffff", align: "left" });
     },
 
     update: function () {
-    	this.background.tilePosition.y += 5;
+    	this.background.tilePosition.y += 3;
     	//this.level = this.score % 15;
         var x, y, cx, cy, dx, dy, angle, scale;
 
@@ -100,14 +106,14 @@
       if( this.game.input.keyboard.isDown(Phaser.Keyboard.LEFT) ) {
     	  if(this.player.x >= 17){
     		  this.player.frame = 1;
-    		  this.player.x -=7;
+    		  this.player.x -= this.player.velocity;
     	  }
       }
       
       if( this.game.input.keyboard.isDown(Phaser.Keyboard.RIGHT) ) {
     	  if(this.player.x <= 783){
     		  this.player.frame = 3;
-    		  this.player.x += 7;
+    		  this.player.x += this.player.velocity;
     	  }
       }
       
@@ -120,13 +126,13 @@
       if(this.game.input.keyboard.isDown(Phaser.Keyboard.UP) ) {
     	  if(this.player.y > 150){
     		  this.player.frame = 2;
-    		  this.player.y -= 7;
+    		  this.player.y -= this.player.velocity;
     	  }  
       }
       if(this.game.input.keyboard.isDown(Phaser.Keyboard.DOWN) ){
     	  this.player.frame = 0;
     	  if(this.player.y < 875){
-    		  this.player.y += 7;
+    		  this.player.y += this.player.velocity;
     	  }    	  
       }
       
@@ -156,20 +162,12 @@
 
         }
       
-      /*this.enemigos = this.aliens.getFirstExists(false);
-      if (this.enemigos)
-          {
-              //  And fire it
-              this.enemigos.reset(Math.random()*800, 0);
-              this.enemigos.body.velocity.y = 400;
-              this.enemigos.body.velocity.x = -100;
-
-        }*/
-      //this.explosion.animations.add('boom',[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],10,true);
-      this.physics.overlap(this.bullets, this.aliens, function (bullet,enemigos){enemigos.kill(); bullet.kill(); this.score +=1; this.scoreText.content = 'SCORE: ' + this.score;}, null, this);
-      this.physics.overlap(this.player, this.aliens, function (player,enemigos){enemigos.kill(); player.kill(); this.game.state.start('end');}, null, this);
-      //this.physics.overlap(this.bullets, this.aliens, function (bullet, enemigos) {  bullet.kill(); enemigos.kill(); this.score += 10; this.scoreText.content = 'SCORE: ' + this.score;}, null, this);
-      //this..physics.overlap(enemyBullets, player, enemyHitsPlayer, null, this);
+      
+      this.physics.overlap(this.bullets, this.aliens, function (bullet,enemigos){enemigos.kill(); bullet.kill(); this.score +=1; this.scoreText.content = 'SCORE: ' + this.score;this.explosion = this.explosions.getFirstDead();
+      this.explosion.reset(enemigos.body.x, enemigos.body.y);
+      this.explosion.play('boom', 50, false, true);}, null, this);
+      this.physics.overlap(this.player, this.aliens, function (player,enemigos){enemigos.kill(); player.kill();window.spaceinvaders.Global.score = this.score; this.game.state.start('end');}, null, this);
+      
     },
     
     fireBullet: function(){
